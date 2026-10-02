@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -28,6 +29,26 @@ export default function Signup() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await api.post('/auth/google', {
+        credential: credentialResponse.credential,
+      });
+      login(res.data.token, res.data.user);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.details || err.response?.data?.error || 'Google signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google Sign-In was cancelled or failed.');
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-card" id="signup-form">
@@ -37,6 +58,22 @@ export default function Signup() {
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
+
+        <div className="google-btn-container">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            shape="rectangular"
+            theme="filled_blue"
+            text="signup_with"
+            size="large"
+            width="100%"
+          />
+        </div>
+
+        <div className="auth-divider">
+          <span>or sign up with email</span>
+        </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

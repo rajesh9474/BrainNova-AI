@@ -1,18 +1,29 @@
 const Groq = require('groq-sdk');
 const { chunkText } = require('../utils/tokenize');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let groqClient = null;
 
-// Model to use — llama-3.3-70b is fast and high quality
-const MODEL = 'llama-3.3-70b-versatile';
+function getGroqClient() {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY is missing. Please set your GROQ_API_KEY in server/.env');
+  }
+  if (!groqClient) {
+    groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  }
+  return groqClient;
+}
+
+// Model to use — openai/gpt-oss-120b is fast, high quality and active on your Groq key
+const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 /**
  * Helper: call Groq with automatic retry on rate limit errors.
  */
 async function callWithRetry(prompt, maxRetries = 3) {
+  const client = getGroqClient();
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const completion = await groq.chat.completions.create({
+      const completion = await client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: MODEL,
         temperature: 0.7,

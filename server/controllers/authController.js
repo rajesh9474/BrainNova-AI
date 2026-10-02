@@ -71,13 +71,20 @@ exports.login = async (req, res) => {
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'No account found with this email. Please click "Sign up" first.' });
+    }
+
+    // Check if account was created with Google (no password set)
+    if (!user.password_hash) {
+      return res.status(400).json({
+        error: 'This account was created with Google. Please click "Continue with Google" to log in.',
+      });
     }
 
     // Verify password
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'Incorrect password. Please try again.' });
     }
 
     const token = generateToken(user);

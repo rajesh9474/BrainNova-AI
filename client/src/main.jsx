@@ -7,7 +7,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import App from './App';
 import './index.css';
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-google-client-id.apps.googleusercontent.com';
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '514857966404-lma9flnnq9iioncts2emvlur3oiviu6s.apps.googleusercontent.com';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

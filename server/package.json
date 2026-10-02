@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch-path=config --watch-path=controllers --watch-path=models --watch-path=routes --watch-path=services --watch-path=utils --watch-path=server.js server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
